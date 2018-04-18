@@ -20,13 +20,13 @@ int main() {
     cout << "'print' to print out tree" << endl;
     cout << "'quit' to quit" << endl;
     cin.getline(input, 20);
-    if (strcmp(input, "input") == 0){
+    if (strcmp(input, "input") == 0){ //manually input values
       int number;
       cin >> number;
       cin.ignore();
       list->insert(number, list->getHead());
    }
-   if (strcmp(input, "read") == 0) {
+   if (strcmp(input, "read") == 0) { //read numbers in by file
      cout << "input file name" << endl;
      char* fileName = new char(200);
 
@@ -54,10 +54,10 @@ int main() {
      list->insert(current, list->getHead());
      list->print(list->getHead(), 0);
     }
-    if (strcmp(input, "print") == 0) {
+    if (strcmp(input, "print") == 0) { //print out tree
       list->print(list->getHead(), 0);
     }
-    if (strcmp(input, "quit") == 0) {
+    if (strcmp(input, "quit") == 0) { //quit
       return 0;
     }
   }
