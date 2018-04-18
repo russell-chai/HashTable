@@ -4,6 +4,7 @@ Author: Russell Chai
 */
 #include "node.h"
 #include "tree.h"
+#include <fstream>
 #include <iostream>
 #include <cstring>
 using namespace std;
@@ -12,24 +13,29 @@ int main() {
  
   tree* list = new tree();//tree
 
-  while (true) {
-    cout << "input 'insert' to insert value" << endl;
-    cout << "input 'print' to print tree" << endl;
+  cout << "input file name" << endl;
+  char* fileName = new char(200);
 
-    char* input = new char(10);
-    cin.getline(input, 10);
+  cin.getline(fileName, 10);
+  ifstream fin(fileName);
 
-    if (strcmp(input, "insert") == 0) {//if input wants insert
-      int value;
-      cout << "input value" << endl;
-      cin >> value;
-      cin.ignore();
-      list->insert(value, list->getHead());//insert value
-    }
-    else if (strcmp(input, "print") == 0) {//if input wants insert
-      cout << "tree is sideways" << endl;
+  int current = 0;
+  while (!fin.eof()) {
+    char digit;
+    fin >> digit;
+    if (digit == ',') {
+      list->insert(current, list->getHead());
+      cout << "tree (sideways)" << endl;
       list->print(list->getHead(), 0);
+      current = 0;
     }
-    
+    else {
+      current *= 10;
+      current += (digit - '0');
+    }
   }
+  current /= 10;
+  cout << "tree (sideways)" << endl;
+  list->insert(current, list->getHead());
+  list->print(list->getHead(), 0);
 }
