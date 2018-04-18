@@ -20,6 +20,7 @@ int main() {
   ifstream fin(fileName);
 
   int current = 0;
+ //splits inputs by commas
   while (!fin.eof()) {
     char digit;
     fin >> digit;
