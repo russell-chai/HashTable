@@ -15,7 +15,7 @@ node* tree::getHead() {
 }
 //checks if node is a left child or right child
 bool isLeft(node* root) {
-  cout << "hi" << endl;
+  
   if (root->getValue() <= root->getParent()->getValue()) {
     return true;
   }
@@ -31,8 +31,8 @@ void tree::fix(node* root) {
   if (root->getParent() == NULL || root->getGrandparent() == NULL) {
     return;
   }
-  //if uncle is red, recolor appropriately, and recursively fix the tree with grandparent as current node
-  if (root->getUncle() != NULL && root->getUncle()->getColor() == 1) {
+  //if uncle and parent are red, recolor appropriately, and recursively fix the tree with grandparent as current node
+  if (root->getUncle() != NULL && root->getUncle()->getColor() == 1 && root->getParent()->getColor() == 1) {
     root->getParent()->setColor(0);
     root->getUncle()->setColor(0);
     root->getGrandparent()->setColor(1);
@@ -198,4 +198,17 @@ void tree::print(node *root, int tabs) {
     cout << root->getValue() << " R" << endl;
   }
   print(root->getLeft(), tabs + 1);
+}
+//search tree recursively
+bool tree::search(int value, node *root) {
+  if (root == NULL) {
+    return false;
+  }
+  if (root->getValue() == value) {
+    return true;
+  }
+  if (value <= root->getValue()) {
+    return search(value, root->getLeft());
+  }
+  return search(value, root->getRight());
 }

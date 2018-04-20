@@ -9,6 +9,7 @@ class tree {
   void print(node *root, int tabs);
   node* getHead();
   void fix(node* root);
+  bool search(int value, node *root);
  private:
   node* head;
 };
