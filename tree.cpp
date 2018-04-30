@@ -8,7 +8,7 @@ using namespace std;
 //tree constructor
 tree::tree() {
   head = new node(0, 0, NULL, NULL, NULL);
-}
+}//herp
 //get the head of the tree
 node* tree::getHead() {
   return head;
