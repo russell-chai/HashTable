@@ -8,7 +8,7 @@ using namespace std;
 //tree constructor
 tree::tree() {
   head = new node(0, 0, NULL, NULL, NULL);
-}//herp
+}
 //get the head of the tree
 node* tree::getHead() {
   return head;
@@ -73,6 +73,9 @@ void tree::fix(node* root) {
       root->getLeft()->setRight(left);
       root->getLeft()->setParent(root);
       root->setParent(grandparent);
+      if (left != NULL) {
+	left->setParent(root->getLeft());
+      }
       grandparent->setLeft(root);
 
       root = root->getLeft();
@@ -126,6 +129,9 @@ void tree::fix(node* root) {
       node* right = root->getRight();
       root->setRight(root->getParent());
       root->getRight()->setLeft(right);
+      if (right != NULL) {
+	right->setParent(root->getRight());
+      }
       root->getRight()->setParent(root);
       root->setParent(grandparent);
       grandparent->setRight(root);
