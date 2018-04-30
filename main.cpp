@@ -10,6 +10,7 @@ Author: Russell Chai
 using namespace std;
 
 int main() {
+	//herp
  
   tree* list = new tree();//tree
  
