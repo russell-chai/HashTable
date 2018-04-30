@@ -2,7 +2,7 @@
 #include "node.h"
 #include <iostream>
 
-class tree {
+class tree {//herp
  public:
   tree();
   void insert(int value, node *root);
