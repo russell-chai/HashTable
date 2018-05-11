@@ -205,13 +205,154 @@ void tree::print(node *root, int tabs) {
   }
   print(root->getLeft(), tabs + 1);
 }
+node* findSuccessor(node* root) {
+  if (root->getLeft() == NULL) {
+    return root;
+  }
+  return findSuccessor(root->getLeft());
+}
+void tree::remove(node *root) {
+  if (root->getColor() == 2) {
+    if (root->getSibling() != NULL && root->getSibling()->getColor() == 0 && root->getSibling()->getRedSon() != NULL){
+      if (isLeft(root->getSibling()) && isLeft(root->getSibling()->getRedSon())) {
+	if (root->getGrandparent() == NULL) {
+	  head = root->getSibling();
+	  head->setParent(NULL);
+	  node* right = head->getRight();
+	  head->setRight(root->getParent());
+	  root->getParent()->setParent(head);
+	  head->getLeft()->setColor(0);
+	  if (right != NULL) {
+	    right->setParent(root->getParent());
+	    root->getParent()->setLeft(right);
+	  }
+	  root->getParent()->setRight(NULL);
+	  delete root;
+	}
+	else {
+	  if (isLeft(root->getParent())) {
+	    root->getGrandparent()->setLeft(root->getSibling());
+	  }
+	  else {
+	    root->getGrandparent()->setRight(root->setSibling());
+	  }
+	  root->getSibling()->setParent(root->getGrandparent());
+	  node* right = root->getSibling()->getRight();
+	  root->getParent()->setParent(root->getSibling());
+	  root->getGrandparent()->setRight(root->getParent());
+	  root->getGrandparent()->getLeft()->setColor(0);
+	  if (right != NULL) {
+	    right->setParent(root->getParent());
+	    root->getParent()->setLeft(right);
+	  }
+	  root->getParent()->setRight(NULL);
+	  delete root;
+	}
+      }
+      else if (isLeft(root->getSibling()) && !isLeft(root->getSibling()->getRedSon())) {
+	node* sibling = root->getSibling();
+	root->getParent()->setLeft(sibling->getRedSon());
+	sibling->getRedSon()->setLeft(sibling);
+	sibling->setParent(set->getRedSon());
+
+	root->getSibling()->setColor(0);
+	root->getSibling()->getLeft()->setColor(1);
+	remove(root);
+      }
+      else if (!isLeft(root->getSibling()) && !isLeft(root->getSibling()->getRedSon())) {
+	if (root->getGrandparent() == NULL) {
+	  head = root->getSibling();
+	  head->setParent(NULL);
+	  node* left = head->getLeft();
+	  head->setLeft(root->getParent());
+	  root->getParent()->setParent(head);
+	  head->getRight()->setColor(0);
+	  if (left != NULL) {
+	    left->getParent(root->getParent());
+	    root->getParent()->setRight(left);
+	  }
+	  root->getParent()->setLeft(NULL);
+	  delete root;
+	}
+	else {
+	  if (isLeft(root->getParent())) {
+	    root->getGrandparent()->setLeft(root->getSibling());
+	  }
+	  else {
+	    root->getGrandparent()->setRight(root->setSibling());
+	  }
+	  root->getSibling()->setParent(root->setSibling());
+	  node* left = root->getSibling()->getLeft();
+	  //LEFT OFF 
+	}
+      }
+    }
+  }
+  else if (root->getLeft() != NULL && root->getRight() != NULL) {
+    node* successor = findSuccessor(root->getRight());
+    int value = successor->getValue();
+
+    remove(successor);
+    root->setValue(value);
+  }
+  else if (root->getColor() == 1 && root->getLeft() == NULL && root->getRight() == NULL) {
+    if (isLeft(root)) {
+      root->getParent()->setLeft(NULL);
+    }
+    else {
+      root->getParent()->setRight(NULL);
+    }
+    delete root;
+  }
+  else if (root->getLeft() != NULL && (root->getColor() == 1 || root->getLeft()->getColor() == 1)) {
+    if (root->getParent() == NULL) {
+      root->getLeft()->setColor(0);
+      head = root->getLeft();
+      delete root;
+    }
+    else {
+      if (isLeft(root)) {
+	root->getParent()->setLeft(root->getLeft());
+      }
+      else {
+	root->getParent()->setRight(root->getLeft());
+      }
+      root->getLeft()->setParent(root->getParent());
+      root->getLeft()->setColor(0);
+      delete root;
+    }
+  }
+  else if (root->getRight() != NULL && (root->getColor() == 1 || root->getRight()->getColor() == 1)) {
+    if (root->getParent() == NULL) {
+      root->getRight()->setColor(0);
+      head = root->getRight();
+      delete root;
+    }
+    else {
+      if (isLeft(root)) {
+	root->getParent()->setLeft(root->getRight());
+      }
+      else {
+	root->getParent()->setRight(root->getRight());
+      }
+      root->getRight()->setParent(root->getParent());
+      root->getRight()->setColor(0);
+      delete root;
+    }
+  }
+  else {
+    root->setValue() = -1;
+    root->setColor() = 2;
+    remove(root);
+  }
+}
 //search tree recursively
-bool tree::search(int value, node *root) {
+node* tree::search(int value, node *root) {
   if (root == NULL) {
-    return false;
+    return NULL;
   }
   if (root->getValue() == value) {
-    return true;
+    return root;
   }
   if (value <= root->getValue()) {
     return search(value, root->getLeft());

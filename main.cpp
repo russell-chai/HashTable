@@ -10,7 +10,6 @@ Author: Russell Chai
 using namespace std;
 
 int main() {
-	//herp
  
   tree* list = new tree();//tree
  
@@ -20,6 +19,7 @@ int main() {
     cout << "'read' to read from file" << endl;
     cout << "'print' to print out tree" << endl;
     cout << "'search' to check if a number is the tree" << endl;
+    cout << "'remove' to remove node from tree" << endl;
     cout << "'quit' to quit" << endl;
     cin.getline(input, 20);
     if (strcmp(input, "input") == 0){ //manually input values
@@ -61,8 +61,20 @@ int main() {
       int value;
       cin >> value;
       cin.ignore();
-      if (list->search(value, list->getHead())) {
+      if (list->search(value, list->getHead()) != NULL) {
 	cout << value << " in tree" << endl;
+      }
+      else {
+	cout << value << " not in tree" << endl;
+      }
+    }
+    if (strcmp(input, "remove") == 0) {
+      cout << "input value to delete" << endl;
+      int value;
+      cin >> value;
+      cin.ignore();
+      if (list->search(value, list->getHead()) != NULL) {
+	list->remove(list->search(value, list->getHead()));
       }
       else {
 	cout << value << " not in tree" << endl;

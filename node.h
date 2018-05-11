@@ -22,7 +22,9 @@ class node {
   node* getRight();
   node* getGrandparent();
   node* getUncle();
-
+  node* getSibling();
+  node* getRedSon();
+  
   //node's private variables
  private:
   node* left;

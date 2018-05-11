@@ -9,7 +9,8 @@ class tree {//herp
   void print(node *root, int tabs);
   node* getHead();
   void fix(node* root);
-  bool search(int value, node *root);
+  node* search(int value, node *root);
+  void remove(node* root);
  private:
   node* head;
 };
