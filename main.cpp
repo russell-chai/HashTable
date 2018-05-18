@@ -44,7 +44,7 @@ int main() {
 	  list->insert(current, list->getHead());
           cout << "tree (sideways)" << endl;
           list->print(list->getHead(), 0);
-          current = 0;
+	  current = 0;
         }
         else {
 	  current *= 10;
@@ -55,6 +55,7 @@ int main() {
       cout << "tree (sideways)" << endl;
       list->insert(current, list->getHead());
       list->print(list->getHead(), 0);
+      
     }
     if (strcmp(input, "search") == 0) {
       cout << "input value to search" << endl;
