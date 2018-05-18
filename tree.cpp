@@ -45,6 +45,9 @@ void tree::fix(node* root) {
     if (isLeft(root) && isLeft(root->getParent())) {
 
       node* temp = new node(grandparent->getValue(), 1, root->getParent(), root->getParent()->getRight(), root->getUncle());
+      if (root->getParent()->getRight() != NULL) {
+	root->getParent()->getRight()->setParent(temp);
+      }
       if (greatGrandparent == NULL) {
 	delete head;
 	head = root->getParent();
@@ -68,6 +71,9 @@ void tree::fix(node* root) {
     //if current node is a left right node, reorder appropriately
     else if (!isLeft(root) && isLeft(root->getParent())) {
       node* temp = new node(grandparent->getValue(), 1, root, root->getRight(), root->getUncle());
+      if (root->getRight() != NULL) {
+	root->getRight()->setParent(temp);
+      }
       node* left = root->getLeft();
       root->setLeft(root->getParent());
       root->getLeft()->setRight(left);
@@ -103,6 +109,9 @@ void tree::fix(node* root) {
     //if current node is a right right node, reorder appropriately
     else if (!isLeft(root) && !isLeft(root->getParent())) {
       node *temp = new node(grandparent->getValue(), 1, root->getParent(), root->getUncle(), root->getParent()->getLeft());
+      if (root->getParent()->getLeft() != NULL) {
+       root->getParent()->getLeft()->setParent(temp);
+      }
       if (greatGrandparent == NULL) {
 	delete head;
 	head = root->getParent();
@@ -126,6 +135,9 @@ void tree::fix(node* root) {
     //if current node is a right left node, reorder appropriately
     else if (isLeft(root) && !isLeft(root->getParent())) {
       node* temp = new node(grandparent->getValue(), 1, root, root->getUncle(), root->getLeft());
+      if (root->getLeft() != NULL) {
+	root->getLeft()->setParent(temp);
+      }
       node* right = root->getRight();
       root->setRight(root->getParent());
       root->getRight()->setLeft(right);
@@ -135,6 +147,7 @@ void tree::fix(node* root) {
       root->getRight()->setParent(root);
       root->setParent(grandparent);
       grandparent->setRight(root);
+
       root = root->getRight();
       if (greatGrandparent == NULL) {
 	delete head;
@@ -165,8 +178,14 @@ void tree::insert(int value, node *root) {
   }
   else if (value <= root->getValue()) {
     if (root->getLeft() == NULL) {
-      node* temp = new node(value, 1, root, NULL, NULL);
-      root->setLeft(temp);
+      cout << root->getValue() << endl;
+      cout << search(11, head)->getParent()->getValue() << endl;
+      print(head, 0);
+      node* tempNode = new node(value, 1, root, NULL, NULL);
+      cout << "hi " << search(11, head)->getParent()->getValue() << endl;
+      print(head, 0);
+      root->setLeft(tempNode);
+      cout << search(11, head)->getParent()->getValue() << endl;
       fix(root->getLeft());
     }
     else {
