@@ -231,25 +231,32 @@ void tree::print(node *root, int tabs) {
 }
 //find the successor node
 node* findSuccessor(node* root) {
-  if (root->getLeft() == NULL) {
+  if (root->getRight() == NULL) {
     return root;
   }
-  return findSuccessor(root->getLeft());
+  return findSuccessor(root->getRight());
 }
 //remove node
 void tree::remove(node *root) {
 
   //if node is a double black
-  if (root->getColor() == 2) {
+  if (root->getColor() >= 2) {
     //when double black is root node
     if (root->getParent() == NULL) {
-      head->setValue(0);
-      head->setParent(NULL);
+      cout << "herp" << endl;/////////
+      if (root->getColor() == 2) {
+	head->setValue(0);
+	head->setParent(NULL);
       
-      head->setLeft(NULL);
-      head->setColor(0);
-      head->setRight(NULL);
-      return;
+	head->setLeft(NULL);
+	head->setColor(0);
+	head->setRight(NULL);
+	return;
+      }
+      else {
+	root->setColor(0);
+	return;
+      }
     }
     //if sibling is black and has a red child
     else if (root->getSibling() != NULL && root->getSibling()->getColor() == 0 && root->getSibling()->getRedSon() != NULL){
@@ -271,7 +278,12 @@ void tree::remove(node *root) {
 	    root->getParent()->setLeft(right);
 	  }
 	  root->getParent()->setRight(NULL);
-	  delete root;
+	  if (root->getColor() == 2) {
+	    delete root;
+	  }
+	  else {
+	    root->setColor(root->getColor() - 10);
+	  }
 	}
 	else {
 	  root->getSibling()->setColor(root->getParent()->getColor());
@@ -294,8 +306,12 @@ void tree::remove(node *root) {
 	  }
 	 
 	  root->getParent()->setRight(NULL);
-	  
-	  delete root;
+	  if (root->getColor() == 2) {
+	    delete root;
+	  }
+	  else {
+	    root->setColor(root->getColor() - 10);
+	  }
 	}
       }
       //when sibling and sibling's child is left right
@@ -331,7 +347,12 @@ void tree::remove(node *root) {
 	    root->getParent()->setRight(left);
 	  }
 	  root->getParent()->setLeft(NULL);
-	  delete root;
+	  if (root->getColor() == 2) {
+	    delete root;
+	  }
+	  else {
+	    root->setColor(root->getColor() - 10);
+	  }
 	}
 	else {
 	  root->getSibling()->setColor(root->getParent()->getColor());
@@ -353,7 +374,12 @@ void tree::remove(node *root) {
 	    root->getParent()->setRight(left);
 	  }
 	  root->getParent()->setLeft(NULL);
-	  delete root;
+	  if (root->getColor() == 2) {
+	    delete root;
+	  }
+	  else {
+	    root->setColor(root->getColor() - 10);
+	  }
 	}
       }
       //when sibling and sibling's child is right left
@@ -374,22 +400,36 @@ void tree::remove(node *root) {
     }
     //when root's sibling is black, and has no children
     else if (root->getSibling() != NULL && root->getSibling()->getColor() == 0) {
-     
+      cout << "hi" << endl;///////////
       root->getSibling()->setColor(1);
-      if (isLeft(root)) {
-        root->getParent()->setLeft(NULL);
-      }
-      else {
-        root->getParent()->setRight(NULL);
+      if (root->getColor() == 2) {
+	if (isLeft(root)) {
+	  root->getParent()->setLeft(NULL);
+	}
+	else {
+	  root->getParent()->setRight(NULL);
+	}
       }
       if (root->getParent()->getColor() == 1) {
 	root->getParent()->setColor(0);
-	delete root;
+	if (root->getColor() == 2) {
+	  delete root;
+	}
+	else {
+	  root->setColor(root->getColor() - 10);
+	}
       }
       else {
 	node* parent = root->getParent();
-	delete root;
-	parent->setColor(2);
+	if (root->getColor() == 2) {
+	  delete root;
+	}
+	else {
+	  root->setColor(root->getColor() - 10);
+	}
+	print(head, 0);
+	parent->setColor(parent->getColor() + 10);
+	cout << parent->getValue() << endl;////////////
 	remove(parent);
       }
     }
@@ -471,7 +511,7 @@ void tree::remove(node *root) {
   }
   //if root has both children, replace node with successor and delete successor
   else if (root->getLeft() != NULL && root->getRight() != NULL) {
-    node* successor = findSuccessor(root->getRight());
+    node* successor = findSuccessor(root->getLeft());
     int value = successor->getValue();
 
     remove(successor);
@@ -529,6 +569,7 @@ void tree::remove(node *root) {
   //set node's color to be double black, and delete root again
   else {
     root->setColor(2);
+    print(head, 0);////////
     remove(root);
   }
 }
