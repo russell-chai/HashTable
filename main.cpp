@@ -41,6 +41,7 @@ int main() {
 	char digit;
         fin >> digit;
         if (digit == ',') {
+	  cout << "inserting: " << current << endl;
 	  list->insert(current, list->getHead());
           cout << "tree (sideways)" << endl;
           list->print(list->getHead(), 0);
@@ -52,6 +53,7 @@ int main() {
         }
       }
       current /= 10;
+      cout << "inserting: " << current << endl;
       cout << "tree (sideways)" << endl;
       list->insert(current, list->getHead());
       list->print(list->getHead(), 0);
