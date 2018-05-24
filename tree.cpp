@@ -243,7 +243,7 @@ void tree::remove(node *root) {
   if (root->getColor() >= 2) {
     //when double black is root node
     if (root->getParent() == NULL) {
-      cout << "herp" << endl;/////////
+      
       if (root->getColor() == 2) {
 	head->setValue(0);
 	head->setParent(NULL);
@@ -275,8 +275,8 @@ void tree::remove(node *root) {
 	  head->getLeft()->setColor(0);
 	  if (right != NULL) {
 	    right->setParent(root->getParent());
-	    root->getParent()->setLeft(right);
 	  }
+	  root->getParent()->setLeft(right);
 	  root->getParent()->setRight(NULL);
 	  if (root->getColor() == 2) {
 	    delete root;
@@ -302,9 +302,8 @@ void tree::remove(node *root) {
 	  root->getGrandparent()->getLeft()->setColor(0);
 	  if (right != NULL) {
 	    right->setParent(root->getParent());
-	    root->getParent()->setLeft(right);
 	  }
-	 
+	  root->getParent()->setLeft(right);
 	  root->getParent()->setRight(NULL);
 	  if (root->getColor() == 2) {
 	    delete root;
@@ -344,8 +343,8 @@ void tree::remove(node *root) {
 	  head->getRight()->setColor(0);
 	  if (left != NULL) {
 	    left->setParent(root->getParent());
-	    root->getParent()->setRight(left);
 	  }
+	  root->getParent()->setRight(left);
 	  root->getParent()->setLeft(NULL);
 	  if (root->getColor() == 2) {
 	    delete root;
@@ -371,8 +370,8 @@ void tree::remove(node *root) {
 	  root->getGrandparent()->getRight()->setColor(0);
 	  if (left != NULL) {
 	    left->setParent(root->getParent());
-	    root->getParent()->setRight(left);
 	  }
+	  root->getParent()->setRight(left);
 	  root->getParent()->setLeft(NULL);
 	  if (root->getColor() == 2) {
 	    delete root;
@@ -387,12 +386,11 @@ void tree::remove(node *root) {
 	//reorder sibling and it's child, then recall remove
 	node* sibling = root->getSibling();
 	root->getParent()->setRight(sibling->getRedSon());
-	sibling->getRedSon()->setLeft(sibling);
+	sibling->getRedSon()->setRight(sibling);
 	sibling->setParent(sibling->getRedSon());
 	sibling->getParent()->setParent(root->getParent());
 	sibling->setRight(NULL);
 	sibling->setLeft(NULL);
-	
 	root->getSibling()->setColor(0);
 	root->getSibling()->getRight()->setColor(1);
 	remove(root);
@@ -400,7 +398,6 @@ void tree::remove(node *root) {
     }
     //when root's sibling is black, and has no children
     else if (root->getSibling() != NULL && root->getSibling()->getColor() == 0) {
-      cout << "hi" << endl;///////////
       root->getSibling()->setColor(1);
       if (root->getColor() == 2) {
 	if (isLeft(root)) {
@@ -427,9 +424,7 @@ void tree::remove(node *root) {
 	else {
 	  root->setColor(root->getColor() - 10);
 	}
-	print(head, 0);
 	parent->setColor(parent->getColor() + 10);
-	cout << parent->getValue() << endl;////////////
 	remove(parent);
       }
     }
@@ -532,6 +527,7 @@ void tree::remove(node *root) {
     if (root->getParent() == NULL) {
       root->getLeft()->setColor(0);
       head = root->getLeft();
+      head->setParent(NULL);
       delete root;
     }
     else {
@@ -551,6 +547,7 @@ void tree::remove(node *root) {
     if (root->getParent() == NULL) {
       root->getRight()->setColor(0);
       head = root->getRight();
+      head->setParent(NULL);
       delete root;
     }
     else {
@@ -569,7 +566,6 @@ void tree::remove(node *root) {
   //set node's color to be double black, and delete root again
   else {
     root->setColor(2);
-    print(head, 0);////////
     remove(root);
   }
 }
