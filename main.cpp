@@ -1,93 +1,162 @@
-/*
-This program constructs a red black tree
-Author: Russell Chai
-*/
-#include "node.h"
-#include "tree.h"
-#include <fstream>
 #include <iostream>
-#include <cstring>
+#include <vector>
+#include <string.h>
+
 using namespace std;
 
+struct node {
+  char* name;
+  vector<node*> connectTo;
+  vector<int> weights;
+};
+int ifContains(node* from, node* find) {
+  for (int a = 0; a < from->connectTo.size(); a++) {
+    if (from->connectTo[a] == find) {
+      return a;
+    }
+  }
+  return -1;
+}
+void print(vector<node*> allNodes) {
+  cout << "adjacency matrix" << endl;
+  cout << "\t";
+  for (int a = 0; a < allNodes.size(); a++) {
+    cout << allNodes[a]->name << "\t";
+  }
+  cout << endl;
+  for (int a = 0; a < allNodes.size(); a++) {
+    cout << allNodes[a]->name << "\t";
+    for (int b = 0; b < allNodes.size(); b++) {
+
+      if (ifContains(allNodes[a], allNodes[b]) != -1) {
+	cout << allNodes[a]->weights[ifContains(allNodes[a], allNodes[b])] << "\t";
+      }
+      else {
+	cout << "_" << "\t";
+      }
+    }
+    cout << endl;
+  }
+}
+node* getNode(char* label, vector<node*> allNodes) {
+  for (int a = 0; a < allNodes.size(); a++) {
+    if (strcmp(allNodes[a]->name, label) == 0) {
+      return allNodes[a];
+    }
+  }
+  return NULL;
+}
 int main() {
- 
-  tree* list = new tree();//tree
- 
-  while (true) {
+  vector<node*> allNodes;
+
+  while(true) {
     char* input = new char(20);
-    cout << "'input' to manual input" << endl;
-    cout << "'read' to read from file" << endl;
-    cout << "'print' to print out tree" << endl;
-    cout << "'search' to check if a number is the tree" << endl;
-    cout << "'remove' to remove node from tree" << endl;
-    cout << "'quit' to quit" << endl;
+    
+    cout << "input 'an' to add node" << endl;
+    cout << "input 'ae' to add edge" << endl;
+    cout << "input 'rn' to remove node" << endl;
+    cout << "input 're' to remove edge" << endl;
+    cout << "input 'spath' to find shortest path" << endl;
+    cout << "input 'quit' to quit" << endl;
+
     cin.getline(input, 20);
-    if (strcmp(input, "input") == 0){ //manually input values
-      int number;
-      cin >> number;
-      cin.ignore();
-      list->insert(number, list->getHead());
+    if (strcmp(input, "an") == 0) {
+      cout << "input node's name" << endl;
+      node* temp = new node();
+      temp->name = new char(60);
+      cin.getline(temp->name, 60);
+      allNodes.push_back(temp);
+      print(allNodes);
     }
-    if (strcmp(input, "read") == 0) { //read numbers in by file
-      cout << "input file name" << endl;
-      char* fileName = new char(200);
+    else if (strcmp(input, "ae") == 0) {
+      cout << "input first node's label" << endl;
+      char* first = new char(60);
+      cin.getline(first, 60);
+      cout << "input second node's label" << endl;
+      char* second = new char(60);
+      cin.getline(second, 60);
 
-      cin.getline(fileName, 200);
-      ifstream fin(fileName);
-
-      int current = 0;
-      //splits inputs by commas
-      while (!fin.eof()) {
-	char digit;
-        fin >> digit;
-        if (digit == ',') {
-	  cout << "inserting: " << current << endl;
-	  list->insert(current, list->getHead());
-          cout << "tree (sideways)" << endl;
-          list->print(list->getHead(), 0);
-	  current = 0;
-        }
-        else {
-	  current *= 10;
-          current += (digit - '0');
-        }
+      node* firstNode = getNode(first, allNodes);
+      node* secondNode = getNode(second, allNodes);
+      if(firstNode == NULL || secondNode == NULL) {
+	cout << "error: node(s) not found" << endl;
+	continue;
       }
-      current /= 10;
-      cout << "inserting: " << current << endl;
-      cout << "tree (sideways)" << endl;
-      list->insert(current, list->getHead());
-      list->print(list->getHead(), 0);
+      cout << "input edge weight" << endl;
+      int weight;
+      cin >> weight;
+      cin.ignore();
       
+      firstNode->connectTo.push_back(secondNode);
+      firstNode->weights.push_back(weight);
+      print(allNodes);
     }
-    if (strcmp(input, "search") == 0) {
-      cout << "input value to search" << endl;
-      int value;
-      cin >> value;
-      cin.ignore();
-      if (list->search(value, list->getHead()) != NULL) {
-	cout << value << " in tree" << endl;
+    else if (strcmp(input, "rn") == 0) {
+      cout << "input the label of the node to remove" << endl;
+      char* label = new char(60);
+      cin.getline(label, 60);
+      node* toDelete = getNode(label, allNodes);
+      if (toDelete == NULL) {
+	cout << "error: node not found" << endl;
+	continue;
       }
-      else {
-	cout << value << " not in tree" << endl;
+      for (int a = 0; a < allNodes.size(); a++) {
+	int index = ifContains(allNodes[a], toDelete);
+	if (index != -1) {
+	  allNodes[a]->connectTo.erase(allNodes[a]->connectTo.begin() + index);
+	  allNodes[a]->weights.erase(allNodes[a]->weights.begin() + index);
+	}
+      }
+
+      for (int a = 0; a < allNodes.size(); a++) {
+	if (allNodes[a] == toDelete) {
+	  allNodes.erase(allNodes.begin() + a);
+	  delete toDelete;
+	}
+      }
+      print(allNodes);
+    }
+    else if (strcmp(input, "re") == 0) {
+      cout << "input first node's label" << endl;
+      char* first = new char(60);
+      cin.getline(first, 60);
+      cout << "input second node's label" << endl;
+      char* second = new char(60);
+      cin.getline(second, 60);
+
+      node* firstNode = getNode(first, allNodes);
+      node* secondNode = getNode(second, allNodes);
+      if (firstNode == NULL || secondNode == NULL) {
+	cout << "error: node(s) not found" << endl;
+	continue;
+      }
+
+      int index = ifContains(firstNode, secondNode);
+      if (index == -1) {
+	cout << "error: nodes are not connected" << endl;
+	continue;
+      }
+
+      firstNode->connectTo.erase(firstNode->connectTo.begin() + index);
+      firstNode->weights.erase(firstNode->weights.begin() + index);
+      print(allNodes);
+    }
+    else if (strcmp(input, "spath") == 0) {
+      cout << "input first node's label" << endl;
+      char* first = new char(60);
+      cin.getline(first, 60);
+      cout << "input second node's label" << endl;
+      char* second = new char(60);
+      cin.getline(second, 60);
+
+      node* firstNode = getNode(first, allNodes);
+      node* secondNode = getNode(second, allNodes);
+      if (firstNode == NULL || secondNode == NULL) {
+	////////////////
       }
     }
-    if (strcmp(input, "remove") == 0) {
-      cout << "input value to delete" << endl;
-      int value;
-      cin >> value;
-      cin.ignore();
-      if (list->search(value, list->getHead()) != NULL) {
-	list->remove(list->search(value, list->getHead()));
-      }
-      else {
-	cout << value << " not in tree" << endl;
-      }
-    }
-    if (strcmp(input, "print") == 0) { //print out tree
-      list->print(list->getHead(), 0);
-    }
-    if (strcmp(input, "quit") == 0) { //quit
-      return 0;
+    else if (strcmp(input, "quit") == 0) {
+      break;
     }
   }
 }
