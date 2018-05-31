@@ -1,14 +1,27 @@
+/*
+Author: Russell Chai
+this program creates a graph, and allows user to add/delete nodes and edges
+also is able to return the shortest path between two nodes
+*/
 #include <iostream>
 #include <vector>
 #include <string.h>
 
 using namespace std;
-
+//struct for vertex
 struct node {
   char* name;
   vector<node*> connectTo;
   vector<int> weights;
 };
+//used for djikstras
+//struct to hold the next node
+struct priority {
+  int length;
+  node* nextNode;
+  vector<node*> beenTo;
+};
+//if node from connects to find, returns the index of node find in from's connectTo vertex
 int ifContains(node* from, node* find) {
   for (int a = 0; a < from->connectTo.size(); a++) {
     if (from->connectTo[a] == find) {
@@ -17,6 +30,7 @@ int ifContains(node* from, node* find) {
   }
   return -1;
 }
+//print out adjacency table
 void print(vector<node*> allNodes) {
   cout << "adjacency matrix" << endl;
   cout << "\t";
@@ -38,6 +52,7 @@ void print(vector<node*> allNodes) {
     cout << endl;
   }
 }
+//returns the node in vertex allNodes, given the node's label
 node* getNode(char* label, vector<node*> allNodes) {
   for (int a = 0; a < allNodes.size(); a++) {
     if (strcmp(allNodes[a]->name, label) == 0) {
@@ -46,7 +61,58 @@ node* getNode(char* label, vector<node*> allNodes) {
   }
   return NULL;
 }
+//shortest path algorithm
+int djikstra(vector<priority*> next, node* destination) {
+  //if there is nothing in next vertex, that means there is no path
+  //return -1
+  if (next.size() == 0) {
+    return -1;
+  }
+  //finds smallest path length
+  priority* smallest = next[0];
+  for (int a = 0; a < next.size(); a++) {
+    if (next[a]->length < smallest->length) {
+      smallest = next[a];
+    }
+  }
+  //removes priorty smallest from vertex
+  for (int a = 0; a < next.size(); a++) {
+    if (next[a] == smallest) {
+      next.erase(next.begin() + a);
+      break;
+    }
+  }
+
+  //if you reached the destination, return path length
+  if (smallest->nextNode == destination) {
+    return smallest->length;
+  }
+
+  //using current node, add priorities to next vertex
+  for (int a = 0; a < smallest->nextNode->connectTo.size(); a++) {
+    bool hasBeenTo = false;
+    for (int b = 0; b < smallest->beenTo.size(); b++) {
+      if (smallest->beenTo[b] == smallest->nextNode->connectTo[a]) {
+	hasBeenTo = true;
+	break;
+      }
+    }
+    if (hasBeenTo) {
+      continue;
+    }
+    priority* temp = new priority();
+    temp->nextNode = smallest->nextNode->connectTo[a];
+    temp->length = smallest->length + smallest->nextNode->weights[a];
+    for (int b = 0; b < smallest->beenTo.size(); b++) {
+      temp->beenTo.push_back(smallest->beenTo[b]);
+    }
+    temp->beenTo.push_back(smallest->nextNode);
+    next.push_back(temp);
+  }
+  return djikstra(next, destination);
+}
 int main() {
+  //vertex of all nodes
   vector<node*> allNodes;
 
   while(true) {
@@ -60,6 +126,7 @@ int main() {
     cout << "input 'quit' to quit" << endl;
 
     cin.getline(input, 20);
+    //add node
     if (strcmp(input, "an") == 0) {
       cout << "input node's name" << endl;
       node* temp = new node();
@@ -68,6 +135,7 @@ int main() {
       allNodes.push_back(temp);
       print(allNodes);
     }
+    //add edge
     else if (strcmp(input, "ae") == 0) {
       cout << "input first node's label" << endl;
       char* first = new char(60);
@@ -91,6 +159,7 @@ int main() {
       firstNode->weights.push_back(weight);
       print(allNodes);
     }
+    //remove node
     else if (strcmp(input, "rn") == 0) {
       cout << "input the label of the node to remove" << endl;
       char* label = new char(60);
@@ -116,6 +185,7 @@ int main() {
       }
       print(allNodes);
     }
+    //remove edge
     else if (strcmp(input, "re") == 0) {
       cout << "input first node's label" << endl;
       char* first = new char(60);
@@ -141,6 +211,7 @@ int main() {
       firstNode->weights.erase(firstNode->weights.begin() + index);
       print(allNodes);
     }
+    //get shortest path
     else if (strcmp(input, "spath") == 0) {
       cout << "input first node's label" << endl;
       char* first = new char(60);
@@ -152,9 +223,26 @@ int main() {
       node* firstNode = getNode(first, allNodes);
       node* secondNode = getNode(second, allNodes);
       if (firstNode == NULL || secondNode == NULL) {
-	////////////////
+	cout << "error: node(s) not found" << endl;
+      }
+
+      vector<priority*> next;
+      for (int a = 0; a < firstNode->connectTo.size(); a++) {
+	priority* temp = new priority();
+	temp->length = firstNode->weights[a];
+	temp->nextNode = firstNode->connectTo[a];
+	temp->beenTo.push_back(firstNode);
+	next.push_back(temp);
+      }
+      int pathLength = djikstra(next, secondNode);
+      if (pathLength == -1) {
+	cout << "path does not exist" << endl;
+      }
+      else {
+	cout << "shortest path: " << pathLength << endl;
       }
     }
+    //quit
     else if (strcmp(input, "quit") == 0) {
       break;
     }
