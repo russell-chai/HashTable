@@ -61,7 +61,10 @@ int addNode(node** students, student* temp, int size) {
     node* newStudents[size * 2];
 
     for (int a = 0; a < size* 2; a++) {
-      newStudents[a] = NULL;
+      node* temp = new node();
+      temp->student = NULL;
+
+      newStudents[a] = temp;
     }
     for (int a = 0; a < size; a++) {
       node* current = students[a];
@@ -69,7 +72,7 @@ int addNode(node** students, student* temp, int size) {
 	node* tempNew = new node();
 	tempNew->student = current->student;
 	tempNew->next = NULL;
-	if (newStudents[getHash(current->student->ID, size * 2)] == NULL) {
+	if (newStudents[getHash(current->student->ID, size * 2)]->student == NULL) {
 	  newStudents[getHash(current->student->ID, size * 2)] = tempNew;
 	}
 	else {
@@ -81,13 +84,13 @@ int addNode(node** students, student* temp, int size) {
 	}
 	node* temp = current;
 	current = current->next;
-	delete current;
+	delete temp;
       }
     }
     size *= 2;
     node** tempArray = students;
     students = newStudents;
-    delete students;
+    //  delete[] tempArray;
   }
   if (students[getHash(temp->ID, size)]->student == NULL) {
     node* add = new node();
