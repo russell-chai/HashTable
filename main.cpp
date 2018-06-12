@@ -8,8 +8,8 @@
 using namespace std;
 
 struct student {
-  char* firstName;
-  char* lastName;
+  char* firstName = new char(30);
+  char* lastName = new char(30);
   int ID;
   double GPA;
 };
@@ -18,6 +18,7 @@ struct node {
   node* next;
 };
 int getHash(int number, int size) {
+  /*
   int address = 0;
   while (number != 0) {
     address *= 13;
@@ -28,6 +29,8 @@ int getHash(int number, int size) {
   }
   address *= 13;
   return address % size;
+  */
+  return number % size;
 }
 int getSize(node* start) {
   int n = 0;
@@ -37,8 +40,9 @@ int getSize(node* start) {
   }
   return n;
 }
-void addNode(node** students, student* temp, int size) {
+int addNode(node** students, student* temp, int size) {
   int hash = getHash(temp->ID, size);
+  
   bool leave = false;
   node* current = students[hash];
   while(current->student != NULL) {
@@ -50,7 +54,7 @@ void addNode(node** students, student* temp, int size) {
     current = current->next;
   }
   if (leave) {
-    return;
+    return size;
   }
      
   while (getSize(students[getHash(temp->ID, size)]) == 3) {
@@ -75,16 +79,22 @@ void addNode(node** students, student* temp, int size) {
 	  }
 	  tempCurrent->next = tempNew;
 	}
+	node* temp = current;
+	current = current->next;
+	delete current;
       }
     }
     size *= 2;
-    
+    node** tempArray = students;
     students = newStudents;
+    delete students;
   }
   if (students[getHash(temp->ID, size)]->student == NULL) {
     node* add = new node();
     add->student = temp;
-    add->next = NULL;
+    add->next = new node();
+    add->next->student = NULL;
+    
     students[getHash(temp->ID, size)] = add;
   }
   else {
@@ -94,15 +104,20 @@ void addNode(node** students, student* temp, int size) {
     }
     node* add = new node();
     add->student = temp;
-    add->next = NULL;
+    add->next = new node();
+    add->next->student = NULL;
+    
     current->next = add;
   }
+  return size;
 }
 int main() {
   srand(time(NULL));
   
   int size = 100;
 
+  int count = 1;
+  
   node *studentArray[size];
   
   for (int a = 0; a < size; a++) {
@@ -128,12 +143,13 @@ int main() {
 
   while(!firstName.eof()) {
     char* tempName = new char(30);
-    firstName.getline(tempName, 30);
+    firstName >> tempName;
+    
     firstNames.push_back(tempName);
   }
   while(!lastName.eof()) {
     char* tempName = new char(30);
-    lastName.getline(tempName, 30);
+    lastName >> tempName;
     lastNames.push_back(tempName);
   }
   
@@ -154,16 +170,7 @@ int main() {
       cin >> yesRSG;
       cin.ignore();
       if (yesRSG == 'y') {
-	cout << "input first name file" << endl;
-	char* firstNameFile = new char(30);
-	cin.getline(firstNameFile, 30);
-	cout << "input last name file" << endl;
-	char* lastNameFile = new char(30);
-	cin.getline(lastNameFile, 30);
-
-	ifstream firstName(firstNameFile);
-	ifstream lastName(lastNameFile);
-	
+       
 	cout << "input number of students you would like to generate" << endl;
 	int n;
 	cin >> n;
@@ -172,14 +179,23 @@ int main() {
 	
 	while (n != 0) {
 	  student *temp = new student();
+	  int firstNameIndex = rand() % firstNames.size();
+	  int lastNameIndex = rand() % lastNames.size();
+      	  strcpy(temp->firstName, firstNames[firstNameIndex]);
+	  strcpy(temp->lastName, lastNames[lastNameIndex]);
 	  
+	  temp->GPA = 4 * ((double) rand() / (double) RAND_MAX);
+	  temp->ID = count;
+	  count++;
+	  size = addNode(students, temp, size);
+	  n--;
 	}
       }
       else if (yesRSG == 'n') {
 	cout << "input student's first name" << endl;
 	char* firstName = new char(30);
 	cin.getline(firstName, 30);
-
+	
 	cout << "input student's last name" << endl;
 	char* lastName = new char(30);
 	cin.getline(lastName, 30);
@@ -195,13 +211,13 @@ int main() {
 	cin.ignore();
 
 	student* temp = new student();
-	
-	temp->firstName = firstName;
-	temp->lastName = lastName;
+
+	strcpy(temp->firstName, firstName);
+	strcpy(temp->lastName, lastName);
 	temp->GPA = GPA;
 	temp->ID = ID;
 	
-	addNode(students, temp, size);
+	size = addNode(students, temp, size);
       }
     }
     else if (input == 'p') {
@@ -212,15 +228,34 @@ int main() {
 	  cout << "GPA: " << temp->student->GPA << endl;
 	  cout << "ID: " << temp->student->ID << endl;
 	  temp = temp->next;
+	  cout << endl;
 	}
 	
       }
     }
     else if (input == 'd') {
+      cout << "input student's ID" << endl;
+      int ID;
+      cin >> ID;
+      cin.ignore();
       
+      if (students[getHash(ID, size)]->student->ID == ID) {
+	node* temp = students[getHash(ID, size)];
+	students[getHash(ID, size)] = students[getHash(ID, size)]->next;
+	delete temp;
+      }
+      else {
+	node* current = students[getHash(ID, size)];
+	while (current->next->student->ID != ID) {
+	  current = current->next;
+	}
+	node* temp = current->next;
+	current->next = temp->next;
+	delete temp;
+      }
     }
     else if (input == 'q') {
-
+      return 0;
     }
   }
 }
