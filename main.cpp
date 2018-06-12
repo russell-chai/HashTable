@@ -37,6 +37,67 @@ int getSize(node* start) {
   }
   return n;
 }
+void addNode() {
+	bool leave = false;
+	node* current = students[hash];
+	while(current->student != NULL) {
+	  if (current->student->ID == ID) {
+	    cout << "ID already used" << endl;
+	    leave = true;
+	    break;
+	  }
+	  current = current->next;
+	}
+	if (leave) {
+	  continue;
+	}
+	
+	while (getSize(students[getHash(ID, size)]) == 3) {
+	  node* newStudents[size * 2];
+
+	  for (int a = 0; a < size* 2; a++) {
+	    newStudents[a] = NULL;
+	  }
+	  for (int a = 0; a < size; a++) {
+	    node* current = students[a];
+	    while (current->student != NULL) {
+	      node* tempNew = new node();
+	      tempNew->student = current->student;
+	      tempNew->next = NULL;
+	      if (newStudents[getHash(current->student->ID, size * 2)] == NULL) {
+		newStudents[getHash(current->student->ID, size * 2)] = tempNew;
+	      }
+	      else {
+		node* tempCurrent = newStudents[getHash(current->student->ID, size * 2)];
+		while (tempCurrent->next != NULL) {
+		  tempCurrent = tempCurrent->next;
+		}
+		tempCurrent->next = tempNew;
+	      }
+	    }
+	  }
+	  size *= 2;
+	  
+	  students = newStudents;
+	}
+	if (students[getHash(ID, size)]->student == NULL) {
+	  node* add = new node();
+	  add->student = temp;
+	  add->next = NULL;
+	  students[getHash(ID, size)] = add;
+	}
+	else {
+	  node* current = students[getHash(ID, size)];
+	  while (current->next->student != NULL) {
+	    current = current->next;
+	  }
+	  node* add = new node();
+	  add->student = temp;
+	  add->next = NULL;
+	  current->next = add;
+	}
+      }
+}
 int main() {
   srand(time(NULL));
   
@@ -141,65 +202,7 @@ int main() {
 	temp->GPA = GPA;
 	temp->ID = ID;
 	
-	bool leave = false;
-	node* current = students[hash];
-	while(current->student != NULL) {
-	  if (current->student->ID == ID) {
-	    cout << "ID already used" << endl;
-	    leave = true;
-	    break;
-	  }
-	  current = current->next;
-	}
-	if (leave) {
-	  continue;
-	}
 	
-	while (getSize(students[getHash(ID, size)]) == 3) {
-	  node* newStudents[size * 2];
-
-	  for (int a = 0; a < size* 2; a++) {
-	    newStudents[a] = NULL;
-	  }
-	  for (int a = 0; a < size; a++) {
-	    node* current = students[a];
-	    while (current->student != NULL) {
-	      node* tempNew = new node();
-	      tempNew->student = current->student;
-	      tempNew->next = NULL;
-	      if (newStudents[getHash(current->student->ID, size * 2)] == NULL) {
-		newStudents[getHash(current->student->ID, size * 2)] = tempNew;
-	      }
-	      else {
-		node* tempCurrent = newStudents[getHash(current->student->ID, size * 2)];
-		while (tempCurrent->next != NULL) {
-		  tempCurrent = tempCurrent->next;
-		}
-		tempCurrent->next = tempNew;
-	      }
-	    }
-	  }
-	  size *= 2;
-	  
-	  students = newStudents;
-	}
-	if (students[getHash(ID, size)]->student == NULL) {
-	  node* add = new node();
-	  add->student = temp;
-	  add->next = NULL;
-	  students[getHash(ID, size)] = add;
-	}
-	else {
-	  node* current = students[getHash(ID, size)];
-	  while (current->next->student != NULL) {
-	    current = current->next;
-	  }
-	  node* add = new node();
-	  add->student = temp;
-	  add->next = NULL;
-	  current->next = add;
-	}
-      }
     }
     else if (input == 'p') {
       for (int a = 0; a < size; a++) {
